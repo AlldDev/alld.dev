@@ -83,11 +83,11 @@
 }
 
 html {
-  background-image: url('../imgs/backgrounds/1.jpg');
+  background-image: url('../imgs/backgrounds/background-index.jpg');
 }
 
 body {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.55);
   width: 100vw;
   height: 100vh;
 }
@@ -251,6 +251,7 @@ audio:hover {
 ########################################################*/
 
 @media screen and (min-width: 300px) {
+
   audio{
     opacity: 0;
   }
