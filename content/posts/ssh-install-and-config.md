@@ -158,18 +158,15 @@ As chaves RSA devem ser geradas no dispositivo **cliente** (seu computador ou ce
 ssh-keygen -t rsa
 ```
 
-A chave pública gerada deve ser copiada para o servidor.
+A chave pública gerada deve ser enviada para o servidor.
 
 ### Adicionando Chave Pública no Servidor
 
-No servidor, adicione a chave pública gerada no arquivo **authorized_keys**:
+Após gerado a chave basta que faça o envio para os servidores de destino:
 
 ```bash
-mkdir -p ~/.ssh
-nano ~/.ssh/authorized_keys
+ssh-copy-id user@<host>
 ```
-
-Cole a chave pública dentro do arquivo.
 
 ### Configurando SSH para Usar Apenas Chaves RSA
 
