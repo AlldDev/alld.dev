@@ -105,6 +105,12 @@ Crie um usuário para o banco:
 CREATE USER 'nextcloud'@'localhost' IDENTIFIED BY 'nextcloud';
 ```
 
+Defina uma senha para seu usuário:
+
+```sql
+ALTER USER 'nextcloud'@'localhost' IDENTIFIED BY 'nova_senha';
+```
+
 Dê as permissões necessárias:
 
 ```sql
