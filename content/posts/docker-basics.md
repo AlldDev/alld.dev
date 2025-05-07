@@ -111,7 +111,30 @@ firewall-cmd --reload
 
 ---
 
-## 🧠 7. ESTRATÉGIAS ADICIONAIS
+## 7. 📦 Exportar e Importar Imagens Docker (Offline / Outro Servidor)
+
+### 🔁 Exportar imagem Docker para um arquivo `.tar`
+
+```bash
+docker save -o nome-da-imagem.tar nome-da-imagem:tag
+````
+
+### 📥 Importar a imagem Docker em outra máquina
+
+1. Copie o arquivo `.tar` para o novo servidor (via SCP, pendrive, etc).
+2. No destino, use:
+
+```bash
+docker load -i nome-da-imagem.tar
+```
+
+Agora a imagem estará disponível na nova máquina com o mesmo nome e tag.
+
+> ✅ Útil para ambientes sem internet, deploys offline ou backups de imagens.
+
+---
+
+## 🧠 8. ESTRATÉGIAS ADICIONAIS
 
 ### ✅ Multi-stage build (quando usar compilação, como em React/Go):
 
@@ -141,7 +164,7 @@ docker run -v /meus-dados:/app/data ...
 
 ---
 
-## 🎁 8. EXEMPLO DE PROJETO PRONTO (PYTHON FLASK)
+## 🎁 9. EXEMPLO DE PROJETO PRONTO (PYTHON FLASK)
 
 ```bash
 mkdir flask-app && cd flask-app
@@ -173,56 +196,10 @@ docker run -d -p 8080:5000 --name meu-flask <user>/flask-api:v1
 
 ---
 
-## 💡 BONUS: DICAS + COMO ACESSAR DADOS DO CONTAINER
+## 💡 BONUS: DICAS
 
 * Use `docker-compose` para gerenciar múltiplos serviços (API + banco + nginx)
 * Adicione `.dockerignore` para evitar copiar arquivos desnecessários
 * Combine com CI/CD (GitHub Actions) para build/push automático
-
-## 📁 Acessando o Container e Copiando Arquivos
-
-### 🔄 Entrando no container em modo terminal
-
-Para interagir com um container em execução (como se fosse um terminal Linux):
-
-```bash
-docker exec -it nome-do-container bash
-````
-
-> Se a imagem não tiver `bash`, use `sh`:
-
-```bash
-docker exec -it nome-do-container sh
-```
-
-### 📤 Copiar arquivos de dentro do container para o host
-
-```bash
-docker cp nome-do-container:/caminho/dentro/container /caminho/no/host
-```
-
-**Exemplo:**
-
-```bash
-docker cp rosao-api:/app/uploads/imagem.png /home/rosao/imagens/
-```
-
-### 📥 Copiar arquivos do host para dentro do container
-
-```bash
-docker cp /caminho/no/host nome-do-container:/caminho/no/container
-```
-
-**Exemplo:**
-
-```bash
-docker cp /home/rosao/config.json rosao-api:/app/config/config.json
-```
-
-> 💡 Dica: combine com `docker exec` para verificar se o arquivo foi copiado corretamente:
-
-```bash
-docker exec -it rosao-api ls /app/uploads
-```
 
 ---
