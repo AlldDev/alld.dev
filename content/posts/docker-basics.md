@@ -50,6 +50,8 @@ CMD ["python", "app.py"]
 ```
 
 > 📌 **Troque o `python`, `pip`, `requirements.txt`, `app.py` conforme a stack da sua aplicação.**
+> 
+> Para mais exemplos de Dockerfile acesse: [Dockerfile Examples by AlldDev](https://gist.github.com/AlldDev/8f2874e2069e2d425d63825afd49ca0d)
 
 ---
 
@@ -62,7 +64,7 @@ docker build -t <user>/meu-app:v1 .
 ### 🔍 Explicando:
 
 * `build`: cria a imagem
-* `-t`: **"tag"** → nome da imagem (`<user>/meu-app`) + versão (`v1`)
+* `-t`: **"tag"** → nome da imagem (`<user>/meu-app`) + versão (`v1`) (Pode ser usado `lasted`)
 * `.`: indica que o `Dockerfile` está no diretório atual
 
 ---
@@ -82,17 +84,18 @@ docker run -d -p 8080:5000 --name meu-app <user>/meu-app:v1
 
 ---
 
-## 🔥 5. LIBERAR PORTA NO FIREWALL (Linux)
+## 🔥 5. LIBERAR PORTA NO FIREWALL (RockyLinux)
 
 ```bash
 firewall-cmd --add-port=8080/tcp
 firewall-cmd --permanent --add-port=8080/tcp
 firewall-cmd --reload
 ```
+> 📌 **Pode variar dependendo da distribuição, `iptables`, `nftables`, etc...**
 
 ---
 
-## 🛠️ 6. GERENCIAMENTO DE CONTAINERS
+## 🛠️ 6. GERENCIAMENTO BÁSICO DE CONTAINERS
 
 | Ação                  | Comando                          |
 | --------------------- | -------------------------------- |
@@ -179,14 +182,15 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    return "Olá Rosão, sua API está online!"
+    return "Olá Mundo, minha API está online!"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
 ```
 
-**`Dockerfile`:** (como já mostrado acima)
+**`Dockerfile`:** (como já mostrado no inicio)
 
+**`Rode no terminal:`**
 ```bash
 docker build -t <user>flask-api:v1 .
 docker run -d -p 8080:5000 --name meu-flask <user>/flask-api:v1
