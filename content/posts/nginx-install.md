@@ -184,6 +184,10 @@ server {
 sudo chown -R www-data:www-data /var/www/meusite  # Ubuntu
 sudo chown -R nginx:nginx /var/www/meusite        # Rocky/Arch
 ```
+- Liberando contexto do `SELinux`:
+```bash
+sudo chcon -R -t httpd_sys_content_t <path> # Rocky/Arch
+```
 
 ### 2. **Porta 80 já em uso**
 - Identifique o processo conflitante:
