@@ -39,7 +39,7 @@ sudo systemctl enable nginx
 ## 🔧 Configuração Básica
 
 ### 1. Configurar Bloco de Servidor (Virtual Host)
-- Crie um arquivo em `/etc/nginx/sites-available/meusite.conf` (Ubuntu/Rocky) ou `/etc/nginx/conf.d/meusite.conf` (Arch):
+- Crie um arquivo em `/etc/nginx/sites-available/meusite.conf` (Ubuntu) ou `/etc/nginx/conf.d/meusite.conf` (Arch/Rocky):
 ```nginx
 server {
     listen 80;
@@ -55,8 +55,11 @@ server {
     }
 }
 ```
+> [!NOTE]
+> Caso queira subir seu serviço na porta 80, é necessário passar `default_server` na frente do listen, pois por padrão ele pegará a pagina default do Nginx (que já utiliza essa porta).
+> Caso não queira passar esse parametro, é necessário acessar o arquivo `nginx.conf` e remover o vhost server que está lá dentro (o que utiliza a porta 80).
 
-- Crie um link simbólico (Ubuntu/Rocky):
+- Crie um link simbólico (Ubuntu):
 ```bash
 sudo ln -s /etc/nginx/sites-available/meusite.conf /etc/nginx/sites-enabled/
 ```
@@ -174,7 +177,21 @@ server {
     }
 }
 ```
----
+### 4. Caso utilize um serviço a parte (como servidores Java, Python, etc...)
+```bash
+server {
+        server_name <server-name>;
+        server_tokens off;
+
+        location / {
+                proxy_pass <URL-da-aplicação>; # Exemplo http://localhost:5000
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_hide_header X-Powered-By;
+        }
+}
+```
 
 ## 🚨 Solução de Problemas Comuns
 
