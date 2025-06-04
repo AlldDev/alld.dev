@@ -1,152 +1,96 @@
 ---
-title: "Blindando sua Conexão SSH em Servidores Linux"
+title: "Instalando e Configurando SSH em Servidores Linux"
 date: 2025-02-06T13:51:03+00:00
 author: "Alessandro César Rosão"
 categories: ["Linux", "Terminal", "SSH", "Segurança"]
 tags: ["ssh", "terminal", "nuvem", "servidor", "cybersecurity"]
 ---
 
-Este guia vai te ajudar a configurar e proteger seu servidor SSH em sistemas Linux, tornando sua conexão mais segura e evitando acessos não autorizados. O **SSH (Secure Shell)** é o método mais comum para acessar servidores remotamente de forma segura, e existem várias medidas que você pode tomar para fortalecer a segurança.
+Este guia demonstra como configurar e proteger seu servidor SSH em servidores Linux, tornando sua conexão mais segura e evitando acessos não autorizados. O **SSH (Secure Shell)** é o método mais comum para acessar servidores remotamente de forma segura, e existem várias medidas que você pode tomar para fortalecer a segurança.
 
-## Instalação do SSH-Server
 
 Na maioria das distribuições Linux, o **SSH-Server** já vem instalado por padrão. No entanto, se o seu sistema não o tiver, siga as instruções abaixo para instalá-lo.
 
-### Passo 1: Atualize os Pacotes do Sistema
-
-Antes de instalar qualquer software, é sempre uma boa prática atualizar o sistema:
+## 1. Atualize os Pacotes do Sistema e instale o OpenSSH
 
 ```bash
-sudo apt update -y && sudo apt upgrade -y
+sudo apt update -y && sudo apt upgrade -y && sudo apt install openssh-server openssh-client
 ```
 
-### Passo 2: Instale o OpenSSH Server e Cliente
-
-Instale os pacotes do **OpenSSH** (servidor e cliente) usando o seguinte comando:
-
-```bash
-sudo apt install openssh-server openssh-client
-```
-
-### Verificando a Instalação
-
-Após a instalação, você pode verificar se o serviço está rodando com o comando:
+Após a instalação, verifique se o serviço está rodando:
 
 ```bash
 sudo systemctl status ssh
 ```
 
-Os arquivos de configuração do **OpenSSH** estão localizados em `/etc/ssh/`. Antes de fazer qualquer alteração, é recomendado fazer um backup do arquivo de configuração principal:
-
-```bash
-sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bkp
-```
-
+> Os arquivos de configuração do **OpenSSH** estão localizados em `/etc/ssh/`. Antes de fazer qualquer alteração, é recomendado fazer um backup do arquivo de configuração principal:
+> ```bash
+> sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bkp
+> ```
 > **Nota**: Lembre-se de que o arquivo correto a ser editado é o **`sshd_config`** (servidor) e não o **`ssh_config`** (cliente).
 
-## Configurações Básicas de Segurança
+## 2. Configurações Básicas de Segurança
 
 Após o backup, você pode começar a editar o arquivo de configuração **`sshd_config`**. Use o editor de sua preferência, como o `nano`:
 
 ```bash
 sudo nano /etc/ssh/sshd_config
 ```
-
-### 1. Alterar a Porta Padrão
-
-Uma das primeiras e mais eficazes maneiras de aumentar a segurança do seu servidor SSH é alterar a porta padrão (22) para outra porta menos comum:
-
+A primeira configuração à ser realizada é **`alterar a Porta Padrão`** de conexão SSH:
 ```bash
 Port 2022
 ```
 
-> **Nota**: Evite usar portas amplamente conhecidas, como 2022, e se você estiver usando o **Fail2Ban**, lembre-se de alterar a configuração da porta no Fail2Ban também.
+> [!NOTE]
+> Evite usar portas amplamente conhecidas, como 2022 ou 9022, e caso esteja usando o **Fail2Ban**, lembre-se de alterar a configuração da porta no Fail2Ban também.
 
-### 2. Desativar Login como Root
 
-Impedir logins diretos com o usuário **root** reduz o risco de ataques, forçando o uso de usuários não privilegiados:
-
+## 3. Personalizando configurações de segurança
 ```bash
+# Desativar Login Root
 PermitRootLogin no
-```
 
-### 3. Limitar Tentativas de Login
-
-Limite o número de tentativas de login antes de desconectar o cliente para evitar ataques de força bruta:
-
-```bash
+# Limitar Tentativas de Login
 MaxAuthTries 3
-```
 
-### 4. Tempo de Carência para Login
-
-Defina o tempo máximo que um usuário tem para completar a autenticação após se conectar:
-
-```bash
+# Tempo de Carência para Login
 LoginGraceTime 20
-```
 
-### 5. Desativar Autenticação por Senha
-
-Se você configurou **chaves SSH** para autenticação, desabilite o login por senha para aumentar a segurança:
-
-```bash
+# Desativar Autenticação por Senha
+## Se você configurou **chaves SSH** para autenticação, desabilite o login por senha para aumentar a segurança:
 PasswordAuthentication no
-```
 
-### 6. Bloquear Logins com Senhas Vazias
-
-Impeça que usuários com senhas vazias façam login:
-
-```bash
+# Bloquear Logins com Senhas Vazias
 PermitEmptyPasswords no
-```
 
-### 7. Desativar Autenticações Desnecessárias
-
-Se você não está usando autenticações adicionais como Kerberos ou GSSAPI, desative-as para reduzir a superfície de ataque:
-
-```bash
+# Desativar Autenticações Desnecessárias
 ChallengeResponseAuthentication no
 KerberosAuthentication no
 GSSAPIAuthentication no
-```
 
-### 8. Desativar Encaminhamento Gráfico (X11)
-
-Se você não precisa de aplicativos gráficos remotos via SSH, desative o **X11 forwarding**:
-
-```bash
+# Desativar Encaminhamento Gráfico (X11)
+## Se você não precisa de aplicativos gráficos remotos via SSH, desative o X11 forwarding
 X11Forwarding no
-```
 
-### 9. Desativar Túnel e Encaminhamentos de Conexão
-
-Se o seu servidor não utiliza **tunelamento** SSH ou **encaminhamento** de portas, é recomendável desativar essas opções:
-
-```bash
+# Desativar Túnel e Encaminhamentos de Conexão
+## Se o seu servidor não utiliza tunelamento SSH ou encaminhamento de portas, é recomendável desativar essas opções
 AllowAgentForwarding no
 AllowTcpForwarding no
 PermitTunnel no
-```
 
-### 10. Desabilitar Banner Detalhado
-
-Para evitar fornecer informações desnecessárias sobre o sistema, desabilite o banner detalhado:
-
-```bash
+# Desabilitar Banner Detalhado
 DebianBanner no
 ```
 
-### Reiniciando o Serviço SSH
+## 4. Reiniciando o Serviço SSH
 
-Após fazer todas as alterações no arquivo de configuração, reinicie o serviço SSH para que as mudanças tenham efeito:
+Após realizar todas as alterações no arquivo de configuração, reinicie o serviço SSH para que as mudanças tenham efeito:
 
 ```bash
 sudo systemctl restart sshd
 ```
 
-## Configurações Avançadas
+## 5. Configurações Avançadas
 
 Para adicionar uma camada extra de segurança, é recomendável configurar a autenticação via **chave RSA**. Isso garante que apenas usuários com a chave correta possam acessar o servidor, eliminando a necessidade de senhas.
 
@@ -185,8 +129,3 @@ sudo systemctl restart sshd
 ```
 
 Agora, o servidor só permitirá logins com chave RSA, tornando a autenticação muito mais segura.
-
-### Considerações Finais
-
-Após seguir esses passos, seu servidor SSH estará significativamente mais protegido. Lembre-se de que a segurança é um processo contínuo, e é importante revisar e atualizar regularmente suas configurações de segurança, especialmente se você estiver lidando com informações sensíveis.
-
