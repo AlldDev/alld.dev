@@ -1,5 +1,5 @@
 ---
-title: "Instalação, Configuração e Segurança do Nginx no Linux"
+title: "Nginx - Instalação, Configuração e Segurança no Linux"
 date: 2025-02-27T11:36:03+00:00
 author: "Alessandro César Rosão"
 categories: ["Linux", "Terminal", "Nginx", "Web"]
@@ -10,35 +10,26 @@ Este guia abrange **Ubuntu**, **Rocky Linux** e **Arch Linux**, com soluções p
 
 ---
 
-## 🛠️ Instalação do Nginx
-
-### **Ubuntu/Debian**
+## Instalação do Nginx
 ```bash
-sudo apt update
-sudo apt install nginx
-sudo systemctl start nginx
-sudo systemctl enable nginx
-```
+# Ubuntu/Debian
+sudo apt update && sudo apt install nginx
 
-### **Rocky Linux/CentOS**
-```bash
+# Rocky Linux/CentOS
 sudo dnf install nginx
-sudo systemctl start nginx
-sudo systemctl enable nginx
-```
 
-### **Arch Linux**
-```bash
+# Arch Linux
 sudo pacman -S nginx-mainline
-sudo systemctl start nginx
-sudo systemctl enable nginx
+
+# Habilite e inicie os serviços
+sudo systemctl start nginx && sudo systemctl enable nginx
 ```
 
 ---
 
-## 🔧 Configuração Básica
+## Configuração Básica
 
-### 1. Configurar Bloco de Servidor (Virtual Host)
+### 1. Configurar Bloco do Servidor (Virtual Host)
 - Crie um arquivo em `/etc/nginx/sites-available/meusite.conf` (Ubuntu) ou `/etc/nginx/conf.d/meusite.conf` (Arch/Rocky):
 ```nginx
 server {
@@ -48,14 +39,14 @@ server {
     index index.html;
 
     # Redireciona todo tráfego HTTP para HTTPS (após gerar o certificado)
-    return 301 https://$host$request_uri;  # ← Comente esta linha se ainda não tem HTTPS
+    return 301 https://$host$request_uri;  # <- Comente esta linha se ainda não tem HTTPS
 
     location / {
         try_files $uri $uri/ =404;
     }
 }
 ```
-> [!NOTE]
+> **Nota:**
 > Caso queira subir seu serviço na porta 80, é necessário passar `default_server` na frente do listen, pois por padrão ele pegará a pagina default do Nginx (que já utiliza essa porta).
 > Caso não queira passar esse parametro, é necessário acessar o arquivo `nginx.conf` e remover o vhost server que está lá dentro (o que utiliza a porta 80).
 
@@ -71,25 +62,21 @@ sudo systemctl reload nginx
 ```
 
 ### 3. Firewall
-- **Ubuntu**:
 ```bash
+# Ubuntu
 sudo ufw allow 'Nginx Full'
-```
 
-- **Rocky Linux**:
-```bash
+# Rocky Linux
 sudo firewall-cmd --permanent --add-service=http --add-service=https
 sudo firewall-cmd --reload
-```
 
-- **Arch Linux** (usando `nftables` ou `iptables`):
-```bash
+# Arch Linux (usando nftables ou iptables)
 sudo nft add rule inet filter input tcp dport {80, 443} counter accept
 ```
 
 ---
 
-## 🔒 Fortalecendo a Segurança
+## Fortalecendo a Segurança
 
 ### 1. Ocultar Versão do Nginx
 Adicione ao arquivo `/etc/nginx/nginx.conf`:
@@ -193,17 +180,21 @@ server {
 }
 ```
 
-## 🚨 Solução de Problemas Comuns
+## Solução de Problemas Comuns
 
 ### 1. **Erro 403 Forbidden**
 - Verifique permissões do diretório `root`:
 ```bash
-sudo chown -R www-data:www-data /var/www/meusite  # Ubuntu
-sudo chown -R nginx:nginx /var/www/meusite        # Rocky/Arch
+# Ubuntu
+sudo chown -R www-data:www-data /var/www/meusite
+
+# Rocky/Arch
+sudo chown -R nginx:nginx /var/www/meusite
 ```
 - Liberando contexto do `SELinux`:
 ```bash
-sudo chcon -R -t httpd_sys_content_t <path> # Rocky/Arch
+# Rocky/Arch
+sudo chcon -R -t httpd_sys_content_t <path>
 ```
 
 ### 2. **Porta 80 já em uso**
@@ -218,30 +209,20 @@ sudo lsof -i :80
 sudo nginx -t  # Mostra o erro exato e o arquivo afetado.
 ```
 
-### 4. **502 Bad Gateway**
-- Geralmente causado por erro no backend (ex: PHP-FPM não está rodando):
-```bash
-sudo systemctl status php-fpm  # Reinicie se necessário
-```
-
 ---
 
-## 🔐 Gerando Certificado SSL Gratuito com Let's Encrypt
+## Gerando Certificado SSL Gratuito com Let's Encrypt
 
 ### 1. Instale o Certbot
-- **Ubuntu**:
 ```bash
+# Ubuntu
 sudo apt install certbot python3-certbot-nginx
-```
 
-- **Rocky Linux**:
-```bash
+# Rocky Linux
 sudo dnf install epel-release
 sudo dnf install certbot python3-certbot-nginx
-```
 
-- **Arch Linux**:
-```bash
+# Arch Linux
 sudo pacman -S certbot certbot-nginx
 ```
 
@@ -263,7 +244,3 @@ sudo certbot renew --dry-run
 
 ### Habilitar no site
 - Volte ao passo `Fortalecendo a Segurança` no topico `Configurar SSL/TLS` para habilitar o certificado SSL gerado ao site. 
-
----
-
-✅ **Pronto!** Seu Nginx está configurado, seguro e com HTTPS gratuito. Monitorize logs em `/var/log/nginx/error.log` para diagnóstico contínuo.
