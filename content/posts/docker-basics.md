@@ -1,5 +1,5 @@
 ---
-title: "Guia Básico do Docker"
+title: "Básico de contêiner (Docker)"
 date: 2025-05-07T11:36:03+00:00
 author: "Alessandro César Rosão"
 categories: ["Linux", "Terminal", "Docker", "Flask"]
@@ -10,7 +10,7 @@ Um guia básico completo pra criar, subir e gerenciar containers Docker localmen
 
 ---
 
-## 📦 1. ESTRUTURA BÁSICA DO PROJETO
+## 1. ESTRUTURA BÁSICA DO PROJETO
 
 Crie seu projeto com a seguinte estrutura base:
 
@@ -24,7 +24,7 @@ meu_app/
 
 ---
 
-## 📄 2. EXEMPLO DE `Dockerfile` GENERALISTA
+## 2. EXEMPLO DE `Dockerfile`
 
 ```dockerfile
 # Imagem base (ajuste para seu runtime: node, go, php, etc)
@@ -55,28 +55,22 @@ CMD ["python", "app.py"]
 
 ---
 
-## 🏗️ 3. BUILD DA IMAGEM
+## 3. BUILD DA IMAGEM
 
 ```bash
 docker build -t <user>/meu-app:v1 .
 ```
-
-### 🔍 Explicando:
-
 * `build`: cria a imagem
 * `-t`: **"tag"** → nome da imagem (`<user>/meu-app`) + versão (`v1`) (Pode ser usado `lasted`)
 * `.`: indica que o `Dockerfile` está no diretório atual
 
 ---
 
-## 🚀 4. SUBIR O CONTAINER
+## 4. SUBIR O CONTAINER
 
 ```bash
 docker run -d -p 8080:5000 --name meu-app <user>/meu-app:v1
 ```
-
-### 🧠 Explicação das flags:
-
 * `-d`: roda em segundo plano (detached)
 * `-p host:container`: mapeia porta local (ex: `localhost:8080`) para a porta exposta no container (ex: `5000`)
 * `--name meu-app`: dá um nome ao container
@@ -84,7 +78,7 @@ docker run -d -p 8080:5000 --name meu-app <user>/meu-app:v1
 
 ---
 
-## 🔥 5. LIBERAR PORTA NO FIREWALL (RockyLinux)
+## 5. LIBERAR PORTA NO FIREWALL (RockyLinux)
 
 ```bash
 firewall-cmd --add-port=8080/tcp
@@ -95,7 +89,7 @@ firewall-cmd --reload
 
 ---
 
-## 🛠️ 6. GERENCIAMENTO BÁSICO DE CONTAINERS
+## 6. GERENCIAMENTO BÁSICO DE CONTAINERS
 
 | Ação                  | Comando                          |
 | --------------------- | -------------------------------- |
@@ -114,15 +108,15 @@ firewall-cmd --reload
 
 ---
 
-## 7. 📦 Exportar e Importar Imagens Docker (Offline / Outro Servidor)
+## 7. Exportar e Importar Imagens Docker (Offline / Outro Servidor)
 
-### 🔁 Exportar imagem Docker para um arquivo `.tar`
+### Exportar imagem Docker para um arquivo `.tar`
 
 ```bash
 docker save -o nome-da-imagem.tar nome-da-imagem:tag
 ````
 
-### 📥 Importar a imagem Docker em outra máquina
+### Importar a imagem Docker em outra máquina
 
 1. Copie o arquivo `.tar` para o novo servidor (via SCP, pendrive, etc).
 2. No destino, use:
@@ -133,33 +127,11 @@ docker load -i nome-da-imagem.tar
 
 Agora a imagem estará disponível na nova máquina com o mesmo nome e tag.
 
-> ✅ Útil para ambientes sem internet, deploys offline ou backups de imagens.
+> Útil para ambientes sem internet, deploys offline ou backups de imagens.
 
 ---
 
-## 🧠 8. ESTRATÉGIAS ADICIONAIS
-
-### ✅ Multi-stage build (quando usar compilação, como em React/Go):
-
-```dockerfile
-# Stage 1: build
-FROM node:18 AS builder
-WORKDIR /app
-COPY . .
-RUN npm install && npm run build
-
-# Stage 2: serve app
-FROM nginx:alpine
-COPY --from=builder /app/build /usr/share/nginx/html
-```
-
-### ✅ Variáveis de ambiente:
-
-```dockerfile
-ENV FLASK_ENV=production
-```
-
-### ✅ Volume externo (dados persistentes):
+## 8. Volume externo (dados persistentes):
 
 ```bash
 docker run -v /meus-dados:/app/data ...
@@ -167,7 +139,7 @@ docker run -v /meus-dados:/app/data ...
 
 ---
 
-## 🎁 9. EXEMPLO DE PROJETO PRONTO (PYTHON FLASK)
+## 9. Exemplo de projeto (Python + Flask)
 
 ```bash
 mkdir flask-app && cd flask-app
@@ -192,7 +164,7 @@ if __name__ == "__main__":
 
 **`Rode no terminal:`**
 ```bash
-docker build -t <user>flask-api:v1 .
+docker build -t <user>/flask-api:v1 .
 docker run -d -p 8080:5000 --name meu-flask <user>/flask-api:v1
 ```
 
@@ -200,10 +172,8 @@ docker run -d -p 8080:5000 --name meu-flask <user>/flask-api:v1
 
 ---
 
-## 💡 BONUS: DICAS
+## DICAS
 
 * Use `docker-compose` para gerenciar múltiplos serviços (API + banco + nginx)
 * Adicione `.dockerignore` para evitar copiar arquivos desnecessários
 * Combine com CI/CD (GitHub Actions) para build/push automático
-
----
