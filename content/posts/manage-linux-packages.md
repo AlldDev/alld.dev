@@ -137,6 +137,9 @@ pacman -Si nome_do_pacote
 
 # Listar pacotes dependentes
 pacman -Qi nome_do_pacote | grep "Required By"
+
+# Verificar dependencias de um arquivo
+pacman -Qo <Caminho-ao-arquivo>
 ```
 
 ### DNF (Fedora)
